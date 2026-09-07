@@ -39,55 +39,39 @@ const allowedOrigins = [
 ];
 
 const isAllowedOrigin = (origin) => {
+  // Non-browser clients (curl, server-to-server, mobile) do not send an Origin header
   if (!origin) return true;
   if (allowedOrigins.includes(origin)) return true;
+  // Allow all Vercel preview and production deployments dynamically
   if (/^https:\/\/.*\.vercel\.app$/.test(origin)) return true;
-  return true; // Allow all origins to prevent blocking production clients
+  return false;
 };
 
-// Immediate preflight & CORS header injector (runs before all routes and body parsers)
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  const allowOrigin = origin || '*';
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (origin === undefined || isAllowedOrigin(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Origin not allowed by CORS'));
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH', 'HEAD'],
+  allowedHeaders: [
+    'Origin',
+    'X-Requested-With',
+    'Content-Type',
+    'Accept',
+    'Authorization',
+    'Cache-Control',
+    'Pragma',
+  ],
+  credentials: true,
+  maxAge: 86400,
+  optionsSuccessStatus: 200,
+};
 
-  res.setHeader('Access-Control-Allow-Origin', allowOrigin);
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma'
-  );
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Max-Age', '86400');
-
-  // Handle preflight OPTIONS request immediately
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-  next();
-});
-
-// Official CORS middleware
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      callback(null, true);
-    },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH', 'HEAD'],
-    allowedHeaders: [
-      'Origin',
-      'X-Requested-With',
-      'Content-Type',
-      'Accept',
-      'Authorization',
-      'Cache-Control',
-      'Pragma',
-    ],
-    credentials: true,
-    optionsSuccessStatus: 200,
-  })
-);
-
-app.options('*', cors());
+// Apply CORS globally. The cors package automatically answers OPTIONS preflight
+// requests with the correct headers before any route handler runs.
+app.use(cors(corsOptions));
 
 // Middleware
 app.use(compression());
