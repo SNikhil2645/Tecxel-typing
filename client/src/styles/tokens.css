@@ -1,0 +1,51 @@
+:root {
+  /* TECXEL Brand Colors */
+  --color-primary: #1B2A9E;
+  --color-primary-dark: #121d70;
+  --color-primary-light: #283dc7;
+  --color-accent: #3B5BFF;
+  --color-accent-glow: rgba(59, 91, 255, 0.35);
+  --color-bg: #F2F3F5;
+  --color-ink: #0A0A0A;
+  --color-ink-secondary: #4A5568;
+  --color-ink-muted: #8C96A5;
+  --color-surface: #FFFFFF;
+  --color-surface-dim: #E9ECEF;
+  --color-surface-hover: #F8F9FA;
+  --color-error: #D32F2F;
+  --color-error-bg: #FFEBEE;
+  --color-success: #2E7D32;
+  --color-success-bg: #E8F5E9;
+  --color-warning: #ED6C02;
+  --color-warning-bg: #FFF3E0;
+
+  /* Typography */
+  --font-pixel: 'Press Start 2P', monospace;
+  --font-mono: 'Fira Code', 'Courier New', monospace;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Elevation & Borders */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-card: 0 4px 14px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-card-heavy: 4px 4px 0px var(--color-ink);
+  --shadow-primary-heavy: 4px 4px 0px var(--color-primary-dark);
+  --shadow-accent-heavy: 4px 4px 0px var(--color-accent);
+  --radius-sm: 2px;
+  --radius-card: 4px;
+  --radius-pill: 9999px;
+  --border-card: 2px solid var(--color-ink);
+  --border-thin: 1px solid #D0D5DD;
+  --border-primary: 2px solid var(--color-primary);
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}

@@ -1,0 +1,24 @@
+{
+  "name": "tecxel-typing-championship",
+  "version": "1.0.0",
+  "description": "TECXEL Typing Championship - Think Beyond, Build Beyond (8-9 Sep 2026)",
+  "scripts": {
+    "server": "npm --prefix server start",
+    "client": "npm --prefix client run dev",
+    "build": "npm --prefix client run build",
+    "test": "npm --prefix server test",
+    "seed": "npm --prefix server run seed"
+  },
+  "keywords": [
+    "typing",
+    "competition",
+    "tecxel",
+    "react",
+    "vite",
+    "nodejs",
+    "express",
+    "mongodb"
+  ],
+  "author": "TECXEL Team",
+  "license": "MIT"
+}

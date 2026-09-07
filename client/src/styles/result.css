@@ -1,0 +1,119 @@
+.result-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.result-card {
+  background-color: var(--color-surface);
+  border: var(--border-card);
+  box-shadow: var(--shadow-card-heavy);
+  padding: var(--spacing-2xl);
+  text-align: center;
+  position: relative;
+}
+
+.result-header-title {
+  font-family: var(--font-pixel);
+  font-size: 1.6rem;
+  color: var(--color-ink);
+  margin-bottom: var(--spacing-xs);
+}
+
+.result-header-subtitle {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: var(--spacing-xl);
+}
+
+/* Score Highlight Circle/Box */
+.score-highlight-box {
+  background-color: #F4F6FB;
+  border: 2px solid var(--color-primary);
+  box-shadow: 4px 4px 0px var(--color-primary);
+  padding: var(--spacing-xl);
+  max-width: 320px;
+  margin: 0 auto var(--spacing-2xl);
+}
+
+.score-highlight-label {
+  font-family: var(--font-pixel);
+  font-size: 0.8rem;
+  color: var(--color-ink-muted);
+  text-transform: uppercase;
+}
+
+.score-highlight-val {
+  font-family: var(--font-pixel);
+  font-size: 2.8rem;
+  color: var(--color-primary);
+  margin: 8px 0;
+}
+
+.score-highlight-sub {
+  font-size: 0.85rem;
+  color: var(--color-ink-secondary);
+}
+
+/* Detailed Metrics Grid */
+.metrics-breakdown-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-2xl);
+}
+
+.metric-cell {
+  background-color: var(--color-surface);
+  border: 1.5px solid var(--color-ink);
+  padding: var(--spacing-md);
+}
+
+.metric-cell-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+  margin-bottom: 4px;
+}
+
+.metric-cell-number {
+  font-family: var(--font-pixel);
+  font-size: 1.2rem;
+  color: var(--color-ink);
+}
+
+/* Final Result Multi-Round Breakdown Table */
+.final-rounds-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: var(--spacing-2xl);
+  border: 2px solid var(--color-ink);
+}
+
+.final-rounds-table th, .final-rounds-table td {
+  padding: 12px 14px;
+  text-align: center;
+  border: 1px solid #D0D5DD;
+}
+
+.final-rounds-table th {
+  background-color: var(--color-ink);
+  color: #ffffff;
+  font-family: var(--font-pixel);
+  font-size: 0.75rem;
+}
+
+.final-rounds-table tr:nth-child(even) {
+  background-color: var(--color-surface-dim);
+}
+
+/* Actions */
+.result-actions-group {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}

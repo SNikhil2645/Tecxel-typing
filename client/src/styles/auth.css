@@ -1,0 +1,53 @@
+.auth-wrapper {
+  max-width: 580px;
+  margin: 0 auto;
+}
+
+.auth-card {
+  background-color: var(--color-surface);
+  border: var(--border-card);
+  box-shadow: var(--shadow-card-heavy);
+  padding: var(--spacing-xl);
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.auth-title {
+  font-family: var(--font-pixel);
+  font-size: 1.2rem;
+  color: var(--color-ink);
+  margin-bottom: var(--spacing-xs);
+}
+
+.auth-subtitle {
+  font-size: 0.9rem;
+  color: var(--color-ink-secondary);
+}
+
+.auth-footer {
+  margin-top: var(--spacing-xl);
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--color-ink-secondary);
+  border-top: 1px solid var(--color-surface-dim);
+  padding-top: var(--spacing-md);
+}
+
+.participant-id-display-card {
+  background-color: #F0F4FF;
+  border: 2px dashed var(--color-primary);
+  padding: var(--spacing-lg);
+  text-align: center;
+  margin: var(--spacing-lg) 0;
+}
+
+.participant-id-huge {
+  font-family: var(--font-pixel);
+  font-size: 1.8rem;
+  color: var(--color-primary);
+  margin: var(--spacing-sm) 0;
+  letter-spacing: 2px;
+}

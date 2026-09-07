@@ -1,0 +1,84 @@
+.navbar {
+  background-color: var(--color-surface);
+  border-bottom: 2px solid var(--color-ink);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 68px;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  text-decoration: none;
+}
+
+.navbar-logo-badge {
+  background-color: var(--color-primary);
+  color: #ffffff;
+  padding: 6px 12px;
+  font-family: var(--font-pixel);
+  font-size: 0.9rem;
+  border: 2px solid var(--color-ink);
+  box-shadow: 2px 2px 0px var(--color-accent);
+}
+
+.navbar-title {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--color-ink);
+  letter-spacing: -0.5px;
+  text-transform: uppercase;
+}
+
+.navbar-title span {
+  color: var(--color-accent);
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  list-style: none;
+}
+
+.nav-link {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-ink);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.nav-link:hover, .nav-link.active {
+  color: var(--color-accent);
+  background-color: var(--color-surface-dim);
+}
+
+.nav-user-pill {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 4px 10px;
+  background-color: var(--color-surface-dim);
+  border: 1.5px solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.nav-user-id {
+  font-family: var(--font-pixel);
+  font-size: 0.75rem;
+  color: var(--color-primary);
+}
