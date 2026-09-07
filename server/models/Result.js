@@ -15,7 +15,7 @@ const resultSchema = new mongoose.Schema(
     },
     typedText: {
       type: String,
-      required: true,
+      default: '',
     },
     targetText: {
       type: String,
