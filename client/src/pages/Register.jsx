@@ -10,7 +10,7 @@ export default function Register() {
   const [formData, setFormData] = useState({
     name: '',
     rollNumber: '',
-    course: 'B.Tech',
+    course: 'BCA',
     year: '2',
     section: 'A',
     email: '',
@@ -157,12 +157,8 @@ export default function Register() {
                   value={formData.course}
                   onChange={handleChange}
                 >
-                  <option value="B.Tech CSE">B.Tech CSE</option>
-                  <option value="B.Tech IT">B.Tech IT</option>
-                  <option value="B.Tech ECE">B.Tech ECE</option>
                   <option value="BCA">BCA</option>
-                  <option value="MCA">MCA</option>
-                  <option value="Other">Other</option>
+                  <option value="BCA-DS">BCA-DS</option>
                 </select>
               </div>
             </div>
