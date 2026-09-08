@@ -7,8 +7,8 @@ export default function AdminLogin() {
   const { adminLogin } = useAuth();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState('admin@tecxl.com');
-  const [password, setPassword] = useState('admin123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -53,6 +53,7 @@ export default function AdminLogin() {
                 type="email"
                 required
                 className="form-control"
+                placeholder="admin@...com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -64,6 +65,7 @@ export default function AdminLogin() {
                 type="password"
                 required
                 className="form-control"
+                placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />

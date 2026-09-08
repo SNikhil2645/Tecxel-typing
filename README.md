@@ -33,7 +33,7 @@ Open `http://localhost:5173` in your browser.
 ## 🔑 Default Credentials
 
 - **Admin Portal:** `http://localhost:5173/admin/login`
-  - **Email:** `admin@tecxl.com`
+  - **Email:** `admin@texcel.com`
   - **Password:** `admin123`
 - **Participant Access:**
   - Register at `http://localhost:5173/register` to receive an auto-generated Participant ID (e.g. `TCX-001`).
