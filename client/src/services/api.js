@@ -17,8 +17,11 @@ const api = axios.create({
 // Request interceptor: attach token
 api.interceptors.request.use(
   (config) => {
-    // Check participant token or admin token depending on route or preference
-    const token = localStorage.getItem('tecxl_token') || localStorage.getItem('tecxl_admin_token');
+    // Admin routes must use the admin token; participant routes use the participant token
+    const isAdminRoute = config.url && config.url.startsWith('/admin/');
+    const token = isAdminRoute
+      ? localStorage.getItem('tecxl_admin_token')
+      : localStorage.getItem('tecxl_token') || localStorage.getItem('tecxl_admin_token');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }

@@ -14,6 +14,7 @@ const {
   resetRound,
   deleteParticipant,
   toggleLeaderboardFreeze,
+  resetLeaderboard,
   exportResults,
 } = require('../controllers/adminController');
 
@@ -32,6 +33,7 @@ router.post('/re-qualify', requalifyParticipant);
 router.post('/reset-round', resetRound);
 router.delete('/participant/:participantId', deleteParticipant);
 router.post('/freeze-leaderboard', toggleLeaderboardFreeze);
+router.post('/reset-leaderboard', resetLeaderboard);
 router.get('/export', exportResults);
 
 module.exports = router;

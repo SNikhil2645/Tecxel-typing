@@ -4,6 +4,7 @@ import Participants from './Participants';
 import Results from './Results';
 import Passages from './Passages';
 import Export from './Export';
+import AdminLeaderboard from './AdminLeaderboard';
 import Loading from '../../components/Loading';
 import api from '../../services/api';
 import '../../styles/admin.css';
@@ -13,14 +14,18 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [statsError, setStatsError] = useState(null);
   const [freezeToggling, setFreezeToggling] = useState(false);
 
   const fetchStats = async () => {
+    setLoading(true);
+    setStatsError(null);
     try {
       const res = await api.get('/admin/dashboard');
       setStats(res.data);
     } catch (err) {
       console.error('Failed to load dashboard statistics:', err);
+      setStatsError(err.response?.data?.message || 'Failed to load dashboard statistics.');
     } finally {
       setLoading(false);
     }
@@ -60,6 +65,14 @@ export default function Dashboard() {
 
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
           <button
+            onClick={fetchStats}
+            disabled={loading}
+            className="btn btn-secondary"
+            style={{ padding: '8px 16px', fontSize: '0.8rem' }}
+          >
+            🔄 Refresh Stats
+          </button>
+          <button
             onClick={handleToggleFreeze}
             disabled={freezeToggling}
             className={`btn ${stats?.isFrozen ? 'btn-success' : 'btn-danger'}`}
@@ -70,6 +83,12 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {statsError && (
+        <div className="anticheat-warning-banner" style={{ borderColor: 'var(--color-error)', marginBottom: '20px' }}>
+          <div>⚠️ {statsError}</div>
+        </div>
+      )}
+
       {/* Admin Tabs */}
       <div className="admin-tabs-nav">
         <button
@@ -77,6 +96,12 @@ export default function Dashboard() {
           onClick={() => { setActiveTab('overview'); fetchStats(); }}
         >
           Overview
+        </button>
+        <button
+          className={`admin-tab-btn ${activeTab === 'leaderboard' ? 'active' : ''}`}
+          onClick={() => setActiveTab('leaderboard')}
+        >
+          Leaderboard
         </button>
         <button
           className={`admin-tab-btn ${activeTab === 'participants' ? 'active' : ''}`}
@@ -160,6 +185,7 @@ export default function Dashboard() {
         </div>
       )}
 
+      {activeTab === 'leaderboard' && <AdminLeaderboard />}
       {activeTab === 'participants' && <Participants />}
       {activeTab === 'results' && <Results />}
       {activeTab === 'passages' && <Passages />}

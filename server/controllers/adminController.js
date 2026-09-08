@@ -300,6 +300,24 @@ const toggleLeaderboardFreeze = async (req, res) => {
   }
 };
 
+// POST /api/admin/reset-leaderboard
+// Admin-only: wipes every round result so the leaderboard starts fresh.
+const resetLeaderboard = async (req, res) => {
+  try {
+    toggleFreeze(false);
+    setFrozenSnapshot(null);
+    const deleted = await Result.deleteMany({});
+    return res.status(200).json({
+      success: true,
+      deletedCount: deleted.deletedCount,
+      message: `Leaderboard reset. ${deleted.deletedCount} result record(s) cleared.`,
+    });
+  } catch (error) {
+    console.error('Reset leaderboard error:', error);
+    return res.status(500).json({ message: 'Error resetting leaderboard' });
+  }
+};
+
 // GET /api/admin/export
 const exportResults = async (req, res) => {
   try {
@@ -429,5 +447,6 @@ module.exports = {
   resetRound,
   deleteParticipant,
   toggleLeaderboardFreeze,
+  resetLeaderboard,
   exportResults,
 };
