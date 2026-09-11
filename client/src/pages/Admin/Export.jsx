@@ -14,6 +14,11 @@ export default function Export() {
         },
       });
 
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => ({}));
+        throw new Error(errBody.message || `Server responded with status ${response.status}`);
+      }
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -25,7 +30,7 @@ export default function Export() {
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error('Export download error:', err);
-      alert('Failed to download exported dataset.');
+      alert(`Failed to download exported dataset: ${err.message}`);
     } finally {
       setDownloading(false);
     }
