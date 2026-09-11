@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Loading from '../components/Loading';
 import api from '../services/api';
 import '../styles/result.css';
@@ -144,10 +144,6 @@ export default function RoundResult() {
                 CONTINUE TO ROUND 2 →
               </button>
             )}
-
-            <Link to="/leaderboard" className="btn btn-secondary">
-              Check Leaderboard 🏆
-            </Link>
           </div>
         </div>
       </div>

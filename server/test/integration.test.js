@@ -211,22 +211,31 @@ async function runIntegrationTests() {
   assert.ok(myRes.body.rank >= 1);
   console.log(`✓ Results summary verified: 3 rounds recorded, rank: #${myRes.body.rank}`);
 
-  // 12. Check Public Leaderboard
-  console.log('12. Testing Public Leaderboard...');
-  const leadRes = await request('/leaderboard');
-  assert.strictEqual(leadRes.status, 200);
-  const foundInLeaderboard = leadRes.body.leaderboard.find((l) => l.participantId === participantId);
-  assert.ok(foundInLeaderboard, 'Participant must appear in public leaderboard');
-  console.log(`✓ Leaderboard verified: Participant ${participantId} ranked #${foundInLeaderboard.rank} with score ${foundInLeaderboard.finalScore}`);
+  // 12. Leaderboard is now admin-only (previously public)
+  console.log('12. Testing Admin-Protected Leaderboard...');
 
-  // 13. Admin Controls
-  console.log('13. Testing Admin Controls...');
+  // Unauthorized (no token) access must be rejected
+  const leadUnauth = await request('/leaderboard');
+  assert.strictEqual(leadUnauth.status, 401, 'Leaderboard must now be admin-only (401 for anonymous)');
+
+  // Login as admin to access the leaderboard
   const adminLoginRes = await request('/auth/admin/login', {
     method: 'POST',
     body: JSON.stringify({ email: 'admin@tecxl.com', password: 'admin123' }),
   });
   assert.strictEqual(adminLoginRes.status, 200);
   const adminToken = adminLoginRes.body.token;
+
+  const leadRes = await request('/leaderboard', {
+    headers: { Authorization: `Bearer ${adminToken}` },
+  });
+  assert.strictEqual(leadRes.status, 200);
+  const foundInLeaderboard = leadRes.body.leaderboard.find((l) => l.participantId === participantId);
+  assert.ok(foundInLeaderboard, 'Participant must appear in leaderboard');
+  console.log(`✓ Leaderboard verified: Participant ${participantId} ranked #${foundInLeaderboard.rank} with score ${foundInLeaderboard.finalScore}`);
+
+  // 13. Admin Controls
+  console.log('13. Testing Admin Controls...');
 
   const dashRes = await request('/admin/dashboard', {
     headers: { Authorization: `Bearer ${adminToken}` },

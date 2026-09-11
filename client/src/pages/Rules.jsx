@@ -74,9 +74,6 @@ export default function Rules() {
             <button onClick={() => navigate('/final-result')} className="btn btn-primary btn-pixel">
               VIEW FINAL RESULT 🏅
             </button>
-            <button onClick={() => navigate('/leaderboard')} className="btn btn-secondary">
-              LIVE LEADERBOARD 🏆
-            </button>
           </div>
         </div>
       ) : (

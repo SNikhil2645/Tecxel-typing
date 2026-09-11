@@ -5,7 +5,7 @@ import RoundCard from '../components/RoundCard';
 import '../styles/home.css';
 
 export default function Home() {
-  const { isAuthenticated, participant } = useAuth();
+  const { isAuthenticated, isAdminAuthenticated, participant } = useAuth();
 
   return (
     <div className="container">
@@ -38,9 +38,12 @@ export default function Home() {
               </Link>
             </>
           )}
-          <Link to="/leaderboard" className="btn btn-secondary">
-            VIEW LEADERBOARD 🏆
-          </Link>
+          {/* Leaderboard is admin-only, so the public CTA is hidden */}
+          {isAdminAuthenticated && (
+            <Link to="/leaderboard" className="btn btn-secondary">
+              VIEW LEADERBOARD 🏆
+            </Link>
+          )}
         </div>
 
         {/* Event Highlights Ribbon Bar */}

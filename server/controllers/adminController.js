@@ -1,7 +1,176 @@
 const Participant = require('../models/Participant');
 const Passage = require('../models/Passage');
 const Result = require('../models/Result');
+const PDFDocument = require('pdfkit');
 const { toggleFreeze, getFreezeStatus, setFrozenSnapshot, getLeaderboard } = require('./leaderboardController');
+
+const EXPORT_COLUMNS = [
+  'Rank',
+  'Participant ID',
+  'Name',
+  'Roll Number',
+  'Course',
+  'Year',
+  'Section',
+  'R1 WPM',
+  'R1 Accuracy',
+  'R1 Score',
+  'R2 WPM',
+  'R2 Accuracy',
+  'R2 Score',
+  'R3 WPM',
+  'R3 Accuracy',
+  'R3 Score',
+  'Disqualified',
+  'Final Score',
+];
+
+const escapeHtml = (value) =>
+  String(value === undefined || value === null ? '' : value).replace(
+    /[&<>"']/g,
+    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])
+  );
+
+const pdfColumnValues = (row) => [
+  row.rank,
+  row.participantId,
+  row.name,
+  row.rollNumber,
+  row.course,
+  row.year,
+  row.section,
+  row.r1_wpm,
+  row.r1_accuracy,
+  row.r1_score,
+  row.r2_wpm,
+  row.r2_accuracy,
+  row.r2_score,
+  row.r3_wpm,
+  row.r3_accuracy,
+  row.r3_score,
+  row.isDisqualified,
+  row.finalScore,
+];
+
+// Generate a real PDF (landscape A4) with the complete results table.
+function buildPdfExport(rows) {
+  return new Promise((resolve, reject) => {
+    const doc = new PDFDocument({ layout: 'landscape', size: 'A4', margin: 22 });
+    const chunks = [];
+    doc.on('data', (c) => chunks.push(c));
+    doc.on('end', () => resolve(Buffer.concat(chunks)));
+    doc.on('error', reject);
+
+    const rawWidths = [30, 52, 84, 42, 34, 20, 22, 36, 36, 40, 36, 36, 40, 36, 36, 40, 32, 46];
+    const pageMargin = doc.page.margins.left;
+    const pageWidth = doc.page.width - pageMargin * 2;
+    const widthScale = pageWidth / rawWidths.reduce((a, b) => a + b, 0);
+    const widths = rawWidths.map((w) => w * widthScale);
+    const rowHeight = 15;
+    const headerHeight = 17;
+    const cellFontSize = 6.5;
+
+    doc.font('Helvetica-Bold').fontSize(14).fillColor('#1B2A9E').text('TECXEL TYPING CHAMPIONSHIP 2026', { align: 'center' });
+    doc.moveDown(0.15);
+    doc.font('Helvetica').fontSize(9).fillColor('#444444').text('Official Championship Results - Full Record', { align: 'center' });
+    doc.moveDown(0.15);
+    doc.fontSize(7.5).fillColor('#777777').text(`Generated: ${new Date().toLocaleString()}  |  Total Participants: ${rows.length}`, { align: 'center' });
+    doc.moveDown(0.5);
+
+    let y = doc.y;
+
+    const renderHeader = () => {
+      doc.rect(pageMargin, y, pageWidth, headerHeight).fill('#1B2A9E');
+      let x = pageMargin;
+      doc.fillColor('#FFFFFF').font('Helvetica-Bold').fontSize(7.2);
+      EXPORT_COLUMNS.forEach((label, i) => {
+        doc.text(label, x + 2, y + headerHeight / 2 - 3, { width: widths[i] - 4, height: headerHeight - 8, lineBreak: false });
+        x += widths[i];
+      });
+      y += headerHeight;
+    };
+
+    const renderRow = (row, index) => {
+      if (y + rowHeight > doc.page.height - 30) {
+        doc.addPage();
+        y = doc.page.margins.top;
+        renderHeader();
+      }
+      if (index % 2 === 0) {
+        doc.rect(pageMargin, y, pageWidth, rowHeight).fill('#F0F4FF');
+      } else {
+        doc.rect(pageMargin, y, pageWidth, rowHeight).fill('#FFFFFF');
+      }
+      const values = pdfColumnValues(row);
+      let x = pageMargin;
+      doc.fillColor('#333333').font('Helvetica').fontSize(cellFontSize);
+      values.forEach((val, i) => {
+        doc.text(String(val === undefined || val === null ? '' : val), x + 2, y + rowHeight / 2 - 3, {
+          width: widths[i] - 4,
+          height: rowHeight - 6,
+          lineBreak: false,
+        });
+        x += widths[i];
+      });
+      y += rowHeight;
+    };
+
+    renderHeader();
+    rows.forEach((row, idx) => renderRow(row, idx));
+
+    doc.moveDown(0.4);
+    doc.font('Helvetica').fontSize(7).fillColor('#888888').text('TECXEL  |  Think Beyond, Build Beyond  |  Speed 50% + Accuracy 50%', { align: 'center' });
+
+    doc.end();
+  });
+}
+
+// Generate a Word-compatible .doc document (HTML inside Word XML envelope).
+function buildDocExport(rows) {
+  const now = new Date().toLocaleString();
+
+  const headerCells = EXPORT_COLUMNS.map(
+    (h) => `<th style="padding:6px 5px;border:1px solid #999999;background:#1B2A9E;color:#FFFFFF;font-size:9px;">${escapeHtml(h)}</th>`
+  ).join('');
+
+  const bodyRows = rows
+    .map((row, idx) => {
+      const bg = idx % 2 === 0 ? '#F0F4FF' : '#FFFFFF';
+      const cells = pdfColumnValues(row)
+        .map((v) => `<td style="padding:4px 5px;border:1px solid #BBBBBB;font-size:9px;">${escapeHtml(v)}</td>`)
+        .join('');
+      return `<tr style="background:${bg};">${cells}</tr>`;
+    })
+    .join('');
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:w="urn:schemas-microsoft-com:office:word"
+      xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+  <meta charset="utf-8">
+  <title>TECXEL Typing Championship Results</title>
+  <!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom><w:DoNotOptimizeForBrowser/></w:WordDocument></xml><![endif]-->
+  <style>
+    body { font-family: Calibri, Arial, sans-serif; }
+    h1 { color: #1B2A9E; font-size: 20px; text-align: center; margin: 0 0 4px 0; }
+    h2 { color: #1B2A9E; font-size: 13px; text-align: center; margin: 0 0 4px 0; }
+    p { font-size: 10px; color: #444444; text-align: center; margin: 3px 0; }
+    table { border-collapse: collapse; width: 100%; margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <h1>TECXEL TYPING CHAMPIONSHIP 2026</h1>
+  <h2>Official Championship Results - Full Record</h2>
+  <p>Generated: ${now} &nbsp;|&nbsp; Total Participants: ${rows.length}</p>
+  <table cellspacing="0" cellpadding="4" border="1">
+    <thead><tr>${headerCells}</tr></thead>
+    <tbody>${bodyRows}</tbody>
+  </table>
+  <p style="margin-top:16px;">TECXEL &nbsp;|&nbsp; Think Beyond, Build Beyond &nbsp;|&nbsp; Speed 50% + Accuracy 50%</p>
+</body>
+</html>`;
+}
 
 // GET /api/admin/dashboard
 const getDashboardStats = async (req, res) => {
@@ -369,6 +538,23 @@ const exportResults = async (req, res) => {
 
     // Sort by finalScore descending
     exportRows.sort((a, b) => (Number(b.finalScore) || 0) - (Number(a.finalScore) || 0));
+    exportRows.forEach((row, i) => {
+      row.rank = i + 1;
+    });
+
+    if (format === 'pdf') {
+      const pdfBuffer = await buildPdfExport(exportRows);
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename="tecxel_typing_championship_results.pdf"');
+      return res.status(200).send(pdfBuffer);
+    }
+
+    if (format === 'doc') {
+      const docHtml = buildDocExport(exportRows);
+      res.setHeader('Content-Type', 'application/msword');
+      res.setHeader('Content-Disposition', 'attachment; filename="tecxel_typing_championship_results.doc"');
+      return res.status(200).send(docHtml);
+    }
 
     if (format === 'json') {
       res.setHeader('Content-Type', 'application/json');
@@ -449,4 +635,6 @@ module.exports = {
   toggleLeaderboardFreeze,
   resetLeaderboard,
   exportResults,
+  buildPdfExport,
+  buildDocExport,
 };

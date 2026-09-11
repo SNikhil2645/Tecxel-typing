@@ -38,11 +38,15 @@ export default function Navbar() {
               Rules
             </NavLink>
           </li>
-          <li>
-            <NavLink to="/leaderboard" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-              Leaderboard
-            </NavLink>
-          </li>
+
+          {/* Leaderboard is visible only to admins */}
+          {isAdminAuthenticated && (
+            <li>
+              <NavLink to="/leaderboard" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+                Leaderboard
+              </NavLink>
+            </li>
+          )}
 
           {isAuthenticated ? (
             <>

@@ -25,7 +25,16 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/leaderboard" element={<LeaderboardPage />} />
+
+          {/* Leaderboard is admin-only */}
+          <Route
+            path="/leaderboard"
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <LeaderboardPage />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Participant Protected Routes */}
           <Route

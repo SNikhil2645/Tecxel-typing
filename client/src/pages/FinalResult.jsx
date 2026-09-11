@@ -143,10 +143,7 @@ export default function FinalResult() {
 
           {/* Action CTAs */}
           <div className="result-actions-group">
-            <Link to="/leaderboard" className="btn btn-primary btn-pixel" style={{ padding: '14px 28px' }}>
-              VIEW LIVE LEADERBOARD 🏆
-            </Link>
-            <Link to="/" className="btn btn-secondary">
+            <Link to="/" className="btn btn-primary btn-pixel" style={{ padding: '14px 28px' }}>
               Home Page
             </Link>
           </div>

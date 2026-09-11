@@ -17,8 +17,11 @@ const api = axios.create({
 // Request interceptor: attach token
 api.interceptors.request.use(
   (config) => {
-    // Admin routes must use the admin token; participant routes use the participant token
-    const isAdminRoute = config.url && config.url.startsWith('/admin/');
+    // Admin routes (-/admin/* and the now admin-only leaderboard) must use the admin token;
+    // participant routes use the participant token
+    const isAdminRoute =
+      config.url &&
+      (config.url.startsWith('/admin/') || config.url.startsWith('/leaderboard'));
     const token = isAdminRoute
       ? localStorage.getItem('tecxl_admin_token')
       : localStorage.getItem('tecxl_token') || localStorage.getItem('tecxl_admin_token');

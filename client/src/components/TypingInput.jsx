@@ -15,6 +15,21 @@ export default function TypingInput({
     }
   }, [autoFocus, disabled]);
 
+  // When the browser engages fullscreen (right after clicking START) it moves
+  // keyboard focus away from the textarea, making typing seem "stopped".
+  // Refocus as soon as the fullscreen transition completes so typing continues.
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement) return;
+      if (autoFocus && !disabled && textareaRef.current) {
+        textareaRef.current.focus();
+      }
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, [autoFocus, disabled]);
+
   const handleKeyDown = (e) => {
     // Block Ctrl+V or Cmd+V
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'v') {

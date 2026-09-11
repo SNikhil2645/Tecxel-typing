@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, memo, forwardRef } from 'react';
 import { useTimer } from '../hooks/useTimer';
 import { useAntiCheat } from '../hooks/useAntiCheat';
 import { useTypingEngine } from '../hooks/useTypingEngine';
@@ -9,6 +9,28 @@ import api from '../services/api';
 import { getRoundDuration } from '../utils/constants';
 import { formatTime } from '../utils/scoring';
 import '../styles/typing.css';
+
+// Memoized per-character span. Only re-renders when a character's own
+// appearance changes, so an entire long passage no longer reconciles on
+// every keystroke (this was the main cause of typing feeling "paused" on
+// laptops during the long Round 3 passages).
+const CharSpan = memo(
+  forwardRef(function CharSpan({ char, status, isCursor }, ref) {
+    let className = 'char-pending';
+    if (status === 'correct') className = 'char-correct';
+    if (status === 'incorrect') className = 'char-incorrect';
+
+    return (
+      <span ref={ref} className={`${className} ${isCursor ? 'char-cursor' : ''}`}>
+        {char}
+      </span>
+    );
+  }),
+  (prev, next) =>
+    prev.char === next.char &&
+    prev.status === next.status &&
+    prev.isCursor === next.isCursor
+);
 
 export default function TypingEngine({
   roundNumber = 1,
@@ -115,22 +137,27 @@ export default function TypingEngine({
     }
   }, [isComplete, hasStarted, isTimeUp, typedText, pauseTimer, performSubmit]);
 
-  // Auto-scroll target text when cursor moves
+  // Auto-scroll target text when cursor moves (rAF-throttled to avoid
+  // synchronous layout thrash on every keystroke)
   useEffect(() => {
     if (cursorRef.current && targetContainerRef.current) {
       const container = targetContainerRef.current;
       const cursor = cursorRef.current;
 
-      const cursorTop = cursor.offsetTop;
-      const cursorBottom = cursorTop + cursor.offsetHeight;
-      const viewTop = container.scrollTop;
-      const viewBottom = viewTop + container.clientHeight;
+      const rafId = requestAnimationFrame(() => {
+        const cursorTop = cursor.offsetTop;
+        const cursorBottom = cursorTop + cursor.offsetHeight;
+        const viewTop = container.scrollTop;
+        const viewBottom = viewTop + container.clientHeight;
 
-      if (cursorBottom > viewBottom - 30) {
-        container.scrollTop = cursorBottom - container.clientHeight + 40;
-      } else if (cursorTop < viewTop + 30) {
-        container.scrollTop = Math.max(0, cursorTop - 30);
-      }
+        if (cursorBottom > viewBottom - 30) {
+          container.scrollTop = cursorBottom - container.clientHeight + 40;
+        } else if (cursorTop < viewTop + 30) {
+          container.scrollTop = Math.max(0, cursorTop - 30);
+        }
+      });
+
+      return () => cancelAnimationFrame(rafId);
     }
   }, [typedText.length]);
 
@@ -252,21 +279,15 @@ export default function TypingEngine({
 
       {/* Target Text Display with character highlights */}
       <div className="target-text-panel" ref={targetContainerRef}>
-        {characterList.map((item, index) => {
-          let className = 'char-pending';
-          if (item.status === 'correct') className = 'char-correct';
-          if (item.status === 'incorrect') className = 'char-incorrect';
-
-          return (
-            <span
-              key={index}
-              ref={item.isCursor && hasStarted ? cursorRef : null}
-              className={`${className} ${item.isCursor && hasStarted ? 'char-cursor' : ''}`}
-            >
-              {item.char}
-            </span>
-          );
-        })}
+        {characterList.map((item, index) => (
+          <CharSpan
+            key={index}
+            char={item.char}
+            status={item.status}
+            isCursor={Boolean(item.isCursor && hasStarted)}
+            ref={item.isCursor && hasStarted ? cursorRef : undefined}
+          />
+        ))}
       </div>
 
       {/* Typing Input */}

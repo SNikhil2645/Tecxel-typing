@@ -42,11 +42,27 @@ export default function Export() {
 
       <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
         <button
-          onClick={() => handleDownload('csv')}
+          onClick={() => handleDownload('pdf')}
           disabled={downloading}
           className="btn btn-primary btn-pixel"
         >
-          {downloading ? 'GENERATING...' : 'DOWNLOAD EXCEL / CSV 📊'}
+          {downloading ? 'GENERATING...' : 'DOWNLOAD PDF 📕'}
+        </button>
+
+        <button
+          onClick={() => handleDownload('doc')}
+          disabled={downloading}
+          className="btn btn-primary"
+        >
+          {downloading ? 'GENERATING...' : 'DOWNLOAD WORD (.DOC) 📘'}
+        </button>
+
+        <button
+          onClick={() => handleDownload('csv')}
+          disabled={downloading}
+          className="btn btn-secondary"
+        >
+          DOWNLOAD EXCEL / CSV 📊
         </button>
 
         <button
@@ -59,7 +75,7 @@ export default function Export() {
       </div>
 
       <div style={{ marginTop: '28px', borderTop: '1px solid #D0D5DD', paddingTop: '16px', fontSize: '0.85rem', color: 'var(--color-ink-muted)' }}>
-        <strong>Export Fields Include:</strong> Participant ID, Full Name, Roll Number, Course, Year, Section, Disqualification Status, Round 1 (WPM, Acc, Score), Round 2, Round 3, Final Score.
+        <strong>Export Fields Include:</strong> Rank, Participant ID, Full Name, Roll Number, Course, Year, Section, Disqualification Status, Round 1 (WPM, Acc, Score), Round 2, Round 3, Final Score.
       </div>
     </div>
   );

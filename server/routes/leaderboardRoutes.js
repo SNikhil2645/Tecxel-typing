@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const adminAuth = require('../middleware/adminAuth');
 const { getLeaderboard } = require('../controllers/leaderboardController');
 
-router.get('/', getLeaderboard);
+// Leaderboard is admin-only. Participants no longer have public access.
+router.get('/', adminAuth, getLeaderboard);
 
 module.exports = router;
